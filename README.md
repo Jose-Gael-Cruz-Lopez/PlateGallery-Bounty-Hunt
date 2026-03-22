@@ -1,6 +1,4 @@
-# 🚗 PlateGallery
-
-> A community-driven platform where users across all 50 states can upload and vote on their favorite vanity license plates, building a living map of America one plate at a time.
+#  PlateGallery
 
 **BU Spark! Innovation Hours Bounty** · Prize: $200 · Difficulty: Intermediate · [View Bounty Brief](https://github.com/hack-bu/plate-gallery)
 
@@ -739,13 +737,3 @@ Each service needs its own `.env` — see `.env.example` files in each `apps/` d
 - [ ] Interactive clickable U.S. map
 - [ ] README with tech stack, moderation docs, and design decisions
 - [ ] Pull request submitted to parent repository
-
----
-
-## Questions?
-
-Reach out at **buspark@bu.edu** or bring questions to Innovation Hours on **Wednesdays 4–6pm** at BU Spark!
-
----
-
-*Built for BU Spark! Innovation Hours Bounty #1*
