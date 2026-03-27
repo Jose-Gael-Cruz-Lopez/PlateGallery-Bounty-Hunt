@@ -14,16 +14,21 @@ export function Home() {
 
   return (
     <div className="page-stack">
+      {/* ── Hero ── */}
       <section className="hero-banner">
         <div className="hero-banner__copy">
-          <p className="eyebrow">Retro-Americana editorial feed</p>
-          <h1>The Internet&apos;s Vanity Plate Hall of Fame.</h1>
+          <p className="eyebrow">The internet&apos;s favorite road obsession</p>
+          <h1>Vanity Plate<br />Hall of Fame.</h1>
           <p>
-            A living scrapbook of roadside wit, regional pride, and weird little moments caught at stoplights.
+            A living gallery of roadside wit, regional pride, and weird little moments caught at stoplights across America.
           </p>
           <div className="hero-banner__actions">
-            <Link to="/upload" className="button button--amber">Submit a Plate</Link>
-            <Link to="/map" className="button button--ghost">Explore the Map</Link>
+            <Link to="/upload" className="button button--amber">
+              + Submit a Plate
+            </Link>
+            <Link to="/map" className="button button--ghost">
+              Explore the Map
+            </Link>
           </div>
         </div>
 
@@ -31,27 +36,45 @@ export function Home() {
           <p className="eyebrow">Plate of the Day</p>
           {featured ? (
             <>
-              <img src={featured.imageUrl} alt={featured.plateText ?? "Featured plate"} />
-              <PlateFrame plateText={featured.plateText ?? "FEATURED"} state={featured.state} accent="teal" />
+              <img
+                src={featured.imageUrl}
+                alt={featured.plateText ?? "Featured plate"}
+              />
+              <PlateFrame
+                plateText={featured.plateText ?? "FEATURED"}
+                state={featured.state}
+                accent="teal"
+              />
             </>
           ) : (
-            <div className="empty-card">Hot-score favorite will appear here.</div>
+            <div className="empty-card">
+              Today&apos;s top-voted plate will appear here.
+            </div>
           )}
         </div>
       </section>
 
+      {/* ── Feed header ── */}
       <section className="section-head">
         <div>
-          <p className="eyebrow">Feed</p>
-          <h2>Fresh plates from the national gallery</h2>
+          <p className="eyebrow">Community Feed</p>
+          <h2>Fresh plates from across the country</h2>
         </div>
         <div className="tab-row">
-          <button type="button" className={`tab-row__item ${sort === "newest" ? "is-active" : ""}`} onClick={() => setSort("newest")}>New</button>
-          <button type="button" className={`tab-row__item ${sort === "top" ? "is-active" : ""}`} onClick={() => setSort("top")}>Top</button>
-          <button type="button" className={`tab-row__item ${sort === "trending" ? "is-active" : ""}`} onClick={() => setSort("trending")}>Trending</button>
+          {(["newest", "top", "trending"] as PlateSort[]).map((s) => (
+            <button
+              key={s}
+              type="button"
+              className={`tab-row__item ${sort === s ? "is-active" : ""}`}
+              onClick={() => setSort(s)}
+            >
+              {s === "newest" ? "New" : s === "top" ? "Top Rated" : "Trending"}
+            </button>
+          ))}
         </div>
       </section>
 
+      {/* ── Masonry feed ── */}
       <section className="masonry-grid">
         {plates.map((plate) => (
           <PlateCard key={plate.id} plate={plate} />
@@ -65,7 +88,7 @@ export function Home() {
           onClick={() => feedQuery.fetchNextPage()}
           disabled={!feedQuery.hasNextPage || feedQuery.isFetchingNextPage}
         >
-          {feedQuery.isFetchingNextPage ? "Loading more..." : "Load more plates"}
+          {feedQuery.isFetchingNextPage ? "Loading…" : "Load more plates"}
         </button>
       </div>
     </div>
