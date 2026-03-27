@@ -2,16 +2,23 @@
   "name": "plategallery",
   "private": true,
   "version": "0.1.0",
-  "packageManager": "pnpm@10.5.2",
+  "packageManager": "npm@10.9.2",
+  "workspaces": [
+    "frontend",
+    "backend/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev:web": "pnpm --filter @plategallery/web dev",
-    "dev:api": "pnpm --filter @plategallery/api dev",
+    "dev": "concurrently -n web,api -c yellow,cyan \"npm run dev:web\" \"npm run dev:api\"",
+    "dev:web": "npm run dev --workspace @plategallery/frontend",
+    "dev:api": "npm run dev --workspace @plategallery/api",
     "dev:moderation": "cd backend/moderation && uvicorn app.main:app --reload --port 8001",
-    "build": "pnpm -r build",
-    "lint": "pnpm -r lint",
-    "typecheck": "pnpm -r typecheck"
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
   },
   "devDependencies": {
+    "concurrently": "^9.1.2",
     "typescript": "^5.8.2"
   }
 }

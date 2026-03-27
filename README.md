@@ -199,7 +199,7 @@ Before anyone writes code, the full team agrees on:
 
 | Days | Task | Deliverable |
 |------|------|-------------|
-| **Day 1** | **Foundation setup (CRITICAL)** | Monorepo, Supabase, Prisma schema, seed data, Clerk, Cloudinary, Redis, `.env.example` files — **every teammate can `git clone` → `pnpm install` → start coding** |
+| **Day 1** | **Foundation setup (CRITICAL)** | Monorepo, Supabase, Prisma schema, seed data, Clerk, Cloudinary, Redis, `.env.example` files — **every teammate can `git clone` → `npm install` → start coding** |
 | 2–3 | Cloudinary + Redis + auth middleware | Upload presets, folder structure, Clerk webhook sync, BullMQ connection |
 | 4–5 | Deploy all 3 services | React → Vercel, Express → Render, FastAPI → Render, CORS config. **All services live on the internet.** |
 | 6–7 | Redis leaderboard cache | Sorted sets for leaderboards, write-through cache, TTL strategy |
@@ -329,16 +329,15 @@ The moderation pipeline is the most technically demanding part. Python handles i
 
 ```
 plategallery/
-├── frontend/
-│   └── web/                    # React + Vite frontend
-│       ├── src/
-│       │   ├── components/     # Upload panel, feed preview, map preview
-│       │   ├── lib/            # API client hooks
-│       │   ├── App.tsx
-│       │   ├── main.tsx
-│       │   └── styles.css
-│       ├── package.json
-│       └── vite.config.ts
+├── frontend/                   # React + Vite frontend
+│   ├── src/
+│   │   ├── components/         # Upload panel, feed preview, map preview
+│   │   ├── lib/                # API client hooks and frontend-local types
+│   │   ├── App.tsx
+│   │   ├── main.tsx
+│   │   └── styles.css
+│   ├── package.json
+│   └── vite.config.ts
 ├── backend/
 │   ├── api/                    # Node.js/Express backend
 │   │   ├── src/
@@ -359,7 +358,6 @@ plategallery/
 │   └── shared/                 # Shared types, constants, Zod schemas
 │       └── src/index.ts
 ├── .env.example
-├── pnpm-workspace.yaml
 ├── tsconfig.base.json
 ├── package.json
 └── README.md
@@ -369,7 +367,7 @@ plategallery/
 
 The repo now includes a working starter architecture:
 
-- `frontend/web` renders a lightweight dashboard backed by the API.
+- `frontend` renders a lightweight dashboard backed by the API.
 - `backend/api` exposes `/api/plates`, `/api/plates/:id/status`, `/api/plates/:id/vote`, `/api/leaderboard`, and `/api/states`.
 - `backend/moderation` exposes `/moderate` and `/health` in FastAPI.
 - `packages/shared` contains the shared Zod schemas and TypeScript types that define the contract between frontend and backend.
@@ -623,7 +621,7 @@ Image URL received
 GitHub Actions on push to `main`:
 - Lint + type check (ESLint, TypeScript)
 - Run tests (Vitest for frontend, Jest + Supertest for API, pytest for moderation)
-- Vercel auto-deploys `frontend/web`
+- Vercel auto-deploys `frontend`
 - Render auto-deploys `backend/api` and `backend/moderation`
 
 ---
@@ -689,13 +687,12 @@ No existing platform combines vanity plate photo sharing with community voting:
 
 - Node.js 18+
 - Python 3.11+
-- pnpm (`npm install -g pnpm`)
 
 ### Local Setup
 
 ```bash
 # 1. Install workspace dependencies
-pnpm install
+npm install
 
 # 2. Copy the shared environment template
 cp .env.example .env
@@ -707,13 +704,15 @@ source venv/bin/activate  # or venv\Scripts\activate on Windows
 pip install -r requirements.txt
 cd ../..
 
-# 4. Start the React app and Express API in separate terminals
-pnpm dev:web                   # React app → localhost:5173
-pnpm dev:api                   # Express API → localhost:4000
-
-# 5. Start FastAPI in a third terminal
-pnpm dev:moderation            # FastAPI → localhost:8001
+# 4. Start everything from the repo root
+npm run dev
 ```
+
+This launches:
+
+- React frontend at `http://localhost:5173`
+- Express API at `http://localhost:4000`
+- FastAPI moderation service at `http://localhost:8001`
 
 ### Environment Variables
 
