@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { BrowserRouter, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { NavBar } from "./components/NavBar";
+import { SplashIntro } from "./components/SplashIntro";
 import { Home } from "./pages/Home";
 import { MapPage } from "./pages/Map";
 import { StatePage } from "./pages/State";
@@ -12,13 +13,15 @@ import { SignInPage, SignUpPage } from "./pages/Auth";
 
 function Layout() {
   return (
-    <div className="site-shell">
-      <div className="grain" aria-hidden="true" />
-      <NavBar />
-      <div className="site-inner">
-        <AnimatedRoutes />
+    <SplashIntro>
+      <div className="site-shell">
+        <div className="grain" aria-hidden="true" />
+        <NavBar />
+        <div className="site-inner">
+          <AnimatedRoutes />
+        </div>
       </div>
-    </div>
+    </SplashIntro>
   );
 }
 
@@ -29,10 +32,10 @@ function AnimatedRoutes() {
     <AnimatePresence mode="wait">
       <motion.div
         key={location.pathname}
-        initial={{ opacity: 0, x: 32 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -24 }}
-        transition={{ duration: 0.36, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.30, ease: [0.16, 1, 0.3, 1] }}
       >
         <Outlet />
       </motion.div>

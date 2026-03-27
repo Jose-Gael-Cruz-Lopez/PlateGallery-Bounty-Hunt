@@ -63,6 +63,57 @@
 }
 
 /* ============================================================
+   BOOT / SPLASH INTRO — "car tablet powering on"
+   The whole app renders inside a rounded screen that zooms
+   from 66% → 100% scale against a dark car-interior backdrop.
+   ============================================================ */
+
+/*
+  Stage = the dark car-interior background visible around the
+  tablet while it's still scaled down.
+*/
+.pg-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  /* Warm dark charcoal — like a car dashboard surround */
+  background:
+    radial-gradient(ellipse 120% 70% at 50% 60%, #1c1c22 0%, #101014 100%);
+  overflow: hidden;
+}
+
+/*
+  Once animation finishes, become invisible layout pass-through
+  so the page scrolls normally.
+*/
+.pg-stage--done {
+  position: static;
+  inset: auto;
+  background: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+/*
+  Screen = the app content itself (the "tablet display").
+  Framer Motion animates scale + border-radius on this element.
+*/
+.pg-screen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--bg-0);
+  transform-origin: center center;
+}
+
+.pg-screen--done {
+  position: static;
+  inset: auto;
+  overflow: visible;
+  min-height: 100vh;
+}
+
+/* ============================================================
    RESET
    ============================================================ */
 *, *::before, *::after { box-sizing: border-box; }
