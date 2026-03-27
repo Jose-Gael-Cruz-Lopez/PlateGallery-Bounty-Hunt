@@ -329,34 +329,55 @@ The moderation pipeline is the most technically demanding part. Python handles i
 
 ```
 plategallery/
-├── apps/
-│   ├── web/                    # React + Vite frontend
-│   │   ├── src/
-│   │   │   ├── components/     # Map, Gallery, VoteButton, etc.
-│   │   │   ├── pages/          # Home, State, Upload, Leaderboard
-│   │   │   ├── hooks/          # useVote, usePlates, useMap
-│   │   │   └── lib/            # API client, Clerk config
-│   │   └── package.json
+├── frontend/
+│   └── web/                    # React + Vite frontend
+│       ├── src/
+│       │   ├── components/     # Upload panel, feed preview, map preview
+│       │   ├── lib/            # API client hooks
+│       │   ├── App.tsx
+│       │   ├── main.tsx
+│       │   └── styles.css
+│       ├── package.json
+│       └── vite.config.ts
+├── backend/
 │   ├── api/                    # Node.js/Express backend
 │   │   ├── src/
-│   │   │   ├── routes/         # plates, votes, leaderboard, states
-│   │   │   ├── middleware/     # auth, rateLimit, validate
-│   │   │   ├── services/       # cloudinary, bullmq, supabase
-│   │   │   └── lib/            # wilson-score, hot-score
+│   │   │   ├── routes/         # plates, leaderboard, states
+│   │   │   ├── services/       # moderation seam, plate service
+│   │   │   ├── lib/            # seed data for local dev
+│   │   │   ├── index.ts
+│   │   │   └── server.ts
 │   │   └── package.json
 │   └── moderation/             # Python/FastAPI service
 │       ├── app/
 │       │   ├── main.py         # FastAPI app
-│       │   ├── pipeline.py     # 4-layer moderation logic
-│       │   ├── vision.py       # Google Cloud Vision wrapper
-│       │   └── hashing.py      # Perceptual hash logic
+│       │   ├── models.py       # request/response contracts
+│       │   └── pipeline.py     # 4-layer moderation stub
 │       ├── requirements.txt
 │       └── Dockerfile
 ├── packages/
 │   └── shared/                 # Shared types, constants, Zod schemas
+│       └── src/index.ts
+├── .env.example
 ├── pnpm-workspace.yaml
+├── tsconfig.base.json
+├── package.json
 └── README.md
 ```
+
+### Starter Status
+
+The repo now includes a working starter architecture:
+
+- `frontend/web` renders a lightweight dashboard backed by the API.
+- `backend/api` exposes `/api/plates`, `/api/plates/:id/status`, `/api/plates/:id/vote`, `/api/leaderboard`, and `/api/states`.
+- `backend/moderation` exposes `/moderate` and `/health` in FastAPI.
+- `packages/shared` contains the shared Zod schemas and TypeScript types that define the contract between frontend and backend.
+
+What is still stubbed on purpose:
+
+- Clerk auth, Cloudinary uploads, Supabase persistence, BullMQ workers, Redis cache, and the real moderation layers are defined as extension points but not fully wired yet.
+- The Express API currently serves seed data so the frontend can move immediately while infrastructure gets connected.
 
 ---
 
@@ -602,8 +623,8 @@ Image URL received
 GitHub Actions on push to `main`:
 - Lint + type check (ESLint, TypeScript)
 - Run tests (Vitest for frontend, Jest + Supertest for API, pytest for moderation)
-- Vercel auto-deploys `apps/web`
-- Render auto-deploys `apps/api` and `apps/moderation`
+- Vercel auto-deploys `frontend/web`
+- Render auto-deploys `backend/api` and `backend/moderation`
 
 ---
 
@@ -673,40 +694,30 @@ No existing platform combines vanity plate photo sharing with community voting:
 ### Local Setup
 
 ```bash
-# 1. Clone the repo
-git clone https://github.com/YOUR-FORK/plate-gallery.git
-cd plate-gallery
-
-# 2. Install dependencies
+# 1. Install workspace dependencies
 pnpm install
 
-# 3. Copy environment variables
-cp apps/web/.env.example apps/web/.env.local
-cp apps/api/.env.example apps/api/.env
-cp apps/moderation/.env.example apps/moderation/.env
+# 2. Copy the shared environment template
+cp .env.example .env
 
-# 4. Set up Python environment for moderation service
-cd apps/moderation
+# 3. Set up Python environment for the moderation service
+cd backend/moderation
 python -m venv venv
 source venv/bin/activate  # or venv\Scripts\activate on Windows
 pip install -r requirements.txt
 cd ../..
 
-# 5. Run database migrations
-cd apps/api
-npx prisma migrate dev
-npx prisma db seed
-cd ../..
+# 4. Start the React app and Express API in separate terminals
+pnpm dev:web                   # React app → localhost:5173
+pnpm dev:api                   # Express API → localhost:4000
 
-# 6. Start all services
-pnpm --filter web dev          # React app → localhost:5173
-pnpm --filter api dev          # Express → localhost:3001
-cd apps/moderation && uvicorn app.main:app --reload --port 8000
+# 5. Start FastAPI in a third terminal
+pnpm dev:moderation            # FastAPI → localhost:8001
 ```
 
 ### Environment Variables
 
-Each service needs its own `.env` — see `.env.example` files in each `apps/` directory.
+The starter uses a single root `.env.example` so you can get moving quickly. As the app matures, you can split this into service-specific env files for Vercel and Render.
 
 **Shared across services:**
 - `SUPABASE_URL`, `SUPABASE_ANON_KEY` — Database
@@ -718,7 +729,7 @@ Each service needs its own `.env` — see `.env.example` files in each `apps/` d
 - `MODERATION_SERVICE_URL` — FastAPI endpoint
 
 **FastAPI only:**
-- `GOOGLE_CLOUD_VISION_KEY` — Plate verification
+- `GOOGLE_APPLICATION_CREDENTIALS` — Google Vision service account path
 - `OPENAI_API_KEY` — Content moderation + fallback
 
 **React frontend only:**

@@ -1,0 +1,17 @@
+{
+  "name": "plategallery",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.5.2",
+  "scripts": {
+    "dev:web": "pnpm --filter @plategallery/web dev",
+    "dev:api": "pnpm --filter @plategallery/api dev",
+    "dev:moderation": "cd backend/moderation && uvicorn app.main:app --reload --port 8001",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  }
+}
