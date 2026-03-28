@@ -5,8 +5,10 @@ from typing import Optional
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 
-from models import Plate, PlatePage, PlateSort, PlateUploadInput, VoteInput
-from seed_data import plate_seed, state_seed
+from api.models import Plate, PlatePage, PlateSort, PlateUploadInput, VoteInput
+from api.seed_data import plate_seed, state_seed
+from moderation.models import ModerateRequest, ModerateResponse
+from moderation.pipeline import run_pipeline
 
 app = FastAPI(title="PlateGallery API", version="0.1.0")
 
@@ -84,6 +86,13 @@ def leaderboard(state: Optional[str] = None):
 @app.get("/api/states")
 def list_states():
     return state_seed
+
+
+# ── Moderation ────────────────────────────────────────────────────────────────
+
+@app.post("/moderate", response_model=ModerateResponse)
+def moderate_image(request: ModerateRequest):
+    return run_pipeline(request)
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────

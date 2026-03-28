@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel, HttpUrl
 
 
@@ -11,5 +12,4 @@ class ModerateResponse(BaseModel):
     approved: bool
     reason: str
     confidence: float
-    phash: str | None = None
-
+    phash: Optional[str] = None

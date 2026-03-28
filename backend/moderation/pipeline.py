@@ -1,10 +1,10 @@
-from app.models import ModerateRequest, ModerateResponse
+from moderation.models import ModerateRequest, ModerateResponse
 
 
 def run_pipeline(request: ModerateRequest) -> ModerateResponse:
     """
     Starter moderation pipeline with clear extension points for:
-    1. file validation and perceptual hashing
+    1. File validation and perceptual hashing
     2. OpenAI moderation
     3. Google Vision plate verification
     4. GPT-4o-mini fallback for ambiguous cases
@@ -15,4 +15,3 @@ def run_pipeline(request: ModerateRequest) -> ModerateResponse:
         confidence=0.82,
         phash="placeholder-phash",
     )
-
