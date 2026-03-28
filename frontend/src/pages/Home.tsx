@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { PlateCard } from "../components/PlateCard";
-import { PlateFrame } from "../components/PlateFrame";
 import { usePlates, useLeaderboard } from "../hooks/usePlates";
 import type { PlateSort } from "../lib/api";
 
@@ -35,17 +34,10 @@ export function Home() {
         <div className="hero-banner__feature">
           <p className="eyebrow">Plate of the Day</p>
           {featured ? (
-            <>
-              <img
-                src={featured.imageUrl}
-                alt={featured.plateText ?? "Featured plate"}
-              />
-              <PlateFrame
-                plateText={featured.plateText ?? "FEATURED"}
-                state={featured.state}
-                accent="teal"
-              />
-            </>
+            <img
+              src={featured.imageUrl}
+              alt={featured.plateText ?? "Featured plate"}
+            />
           ) : (
             <div className="empty-card">
               Today&apos;s top-voted plate will appear here.

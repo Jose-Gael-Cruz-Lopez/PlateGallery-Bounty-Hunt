@@ -1,5 +1,6 @@
 import { UserButton } from "@clerk/clerk-react";
 import { NavLink, Link } from "react-router-dom";
+import { Logo } from "./Logo";
 
 const clerkEnabled =
   Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY) &&
@@ -9,7 +10,7 @@ export function NavBar() {
   return (
     <header className="topbar">
       <Link to="/" className="brandmark">
-        <span className="brandmark__badge">PG</span>
+        <Logo />
         <div>
           <strong>PlateGallery</strong>
           <span>Vanity Plate Hall of Fame</span>

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { PlateFrame } from "../components/PlateFrame";
 import { UploadZone } from "../components/UploadZone";
 import { fetchJson } from "../lib/api";
 import { stateNames } from "../lib/utils";
@@ -97,8 +96,6 @@ export function UploadPage() {
         </form>
 
         <aside className="upload-preview">
-          <p className="eyebrow">Live plate preview</p>
-          <PlateFrame plateText={plateText || "YOURTAG"} state={state} />
           <div className={`status-card status-card--${status}`}>
             <strong>{status === "idle" ? "Ready to submit" : status === "pending" ? "Pending review" : status === "approved" ? "Approved" : "Rejected"}</strong>
             <span>{message}</span>

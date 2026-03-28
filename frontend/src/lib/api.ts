@@ -1,6 +1,21 @@
+import { getMockResponse } from "./mockData";
+
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
+/**
+ * When VITE_API_URL is not set (or points to localhost), the app uses
+ * the mock data in mockData.ts instead of hitting the network.
+ * Set VITE_API_URL to a real backend URL in .env to switch to live data.
+ */
+const USE_MOCK =
+  !import.meta.env.VITE_API_URL ||
+  import.meta.env.VITE_API_URL.startsWith("http://localhost");
+
 export async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
+  if (USE_MOCK) {
+    return getMockResponse<T>(path);
+  }
+
   const response = await fetch(`${API_URL}${path}`, init);
 
   if (!response.ok) {

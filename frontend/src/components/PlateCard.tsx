@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { PlateFrame } from "./PlateFrame";
 import { VoteButton } from "./VoteButton";
 import { timeAgo } from "../lib/utils";
 import type { Plate } from "../lib/types";
@@ -19,7 +18,6 @@ export function PlateCard({ plate }: Props) {
           <span className="state-badge">{plate.state}</span>
           <span className="meta-faint">@roadwatcher</span>
         </div>
-        <PlateFrame plateText={plate.plateText ?? "UNTITLED"} state={plate.state} />
         <p className="plate-card__caption">{plate.description ?? "Classic roadside energy, freshly added to the gallery."}</p>
         <div className="plate-card__footer">
           <small>{timeAgo(plate.createdAt)}</small>
