@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { UploadZone } from "../components/UploadZone";
-import { fetchJson } from "../lib/api";
 import { stateNames } from "../lib/utils";
 
-type Status = "idle" | "pending" | "approved" | "rejected";
+const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
+const USE_MOCK =
+  !import.meta.env.VITE_API_URL ||
+  import.meta.env.VITE_API_URL.startsWith("http://localhost");
+
+type Status = "idle" | "uploading" | "submitting" | "approved" | "rejected";
 
 export function UploadPage() {
   const [file, setFile] = useState<File>();
@@ -14,40 +18,85 @@ export function UploadPage() {
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("Upload a clean photo of a physical vanity plate.");
 
+  const isBusy = status === "uploading" || status === "submitting";
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setStatus("pending");
-    setMessage("Submitting your plate to the moderation queue...");
+
+    // Step 1 — upload the image file (if one was selected)
+    let imageUrl = "";
+    if (file) {
+      if (USE_MOCK) {
+        // In mock mode we skip the real upload and use a placeholder
+        imageUrl = URL.createObjectURL(file);
+      } else {
+        setStatus("uploading");
+        setMessage("Uploading your photo…");
+        try {
+          const form = new FormData();
+          form.append("file", file);
+          const uploadRes = await fetch(`${API_URL}/api/upload`, {
+            method: "POST",
+            body: form,
+          });
+          if (!uploadRes.ok) {
+            const err = await uploadRes.json().catch(() => ({}));
+            throw new Error((err as { detail?: string }).detail ?? `Upload failed (${uploadRes.status})`);
+          }
+          const uploadData = await uploadRes.json() as { url: string };
+          imageUrl = uploadData.url;
+        } catch (err) {
+          setStatus("rejected");
+          setMessage(err instanceof Error ? err.message : "Photo upload failed. Please try again.");
+          return;
+        }
+      }
+    }
+
+    // Step 2 — create the plate record
+    setStatus("submitting");
+    setMessage("Submitting your plate to the moderation queue…");
 
     try {
-      await fetchJson("/api/plates", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          state,
-          plateText,
-          description
-        })
-      });
+      if (USE_MOCK) {
+        // Simulate network delay in mock mode
+        await new Promise((r) => setTimeout(r, 800));
+      } else {
+        const res = await fetch(`${API_URL}/api/plates`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            state,
+            plate_text: plateText,
+            description,
+            image_url: imageUrl,
+          }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error((err as { detail?: string }).detail ?? `Submission failed (${res.status})`);
+        }
+      }
 
-      window.setTimeout(() => {
-        setStatus("approved");
-        setMessage("Your plate is live and ready for the gallery.");
-      }, 1200);
-    } catch {
+      setStatus("approved");
+      setMessage("Your plate is in the moderation queue and will be live shortly.");
+      // Reset form
+      setFile(undefined);
+      setPreviewUrl(undefined);
+      setPlateText("");
+      setDescription("");
+    } catch (err) {
       setStatus("rejected");
-      setMessage("We could not submit that plate just now. Please try again.");
+      setMessage(err instanceof Error ? err.message : "We could not submit that plate just now. Please try again.");
     }
   }
 
   function handleFileChange(nextFile?: File) {
     setFile(nextFile);
-
     if (!nextFile) {
       setPreviewUrl(undefined);
       return;
     }
-
     setPreviewUrl(URL.createObjectURL(nextFile));
   }
 
@@ -90,14 +139,28 @@ export function UploadPage() {
             />
           </label>
 
-          <button className="button button--amber" type="submit" disabled={!file && !plateText}>
-            Submit for moderation
+          <button
+            className="button button--amber"
+            type="submit"
+            disabled={isBusy || (!file && !plateText)}
+          >
+            {status === "uploading"
+              ? "Uploading photo…"
+              : status === "submitting"
+              ? "Submitting…"
+              : "Submit for moderation"}
           </button>
         </form>
 
         <aside className="upload-preview">
-          <div className={`status-card status-card--${status}`}>
-            <strong>{status === "idle" ? "Ready to submit" : status === "pending" ? "Pending review" : status === "approved" ? "Approved" : "Rejected"}</strong>
+          <div className={`status-card status-card--${status === "uploading" || status === "submitting" ? "pending" : status}`}>
+            <strong>
+              {status === "idle" ? "Ready to submit"
+                : status === "uploading" ? "Uploading photo"
+                : status === "submitting" ? "Pending review"
+                : status === "approved" ? "Approved"
+                : "Rejected"}
+            </strong>
             <span>{message}</span>
           </div>
         </aside>
@@ -105,4 +168,3 @@ export function UploadPage() {
     </div>
   );
 }
-
