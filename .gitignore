@@ -4,3 +4,10 @@ dist
 .env.local
 *.log
 .DS_Store
+__pycache__
+*.pyc
+.venv
+*.egg-info
+.mypy_cache
+.pytest_cache
+.ruff_cache
