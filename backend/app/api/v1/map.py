@@ -4,10 +4,9 @@ import time
 from typing import Any
 
 from fastapi import APIRouter, Depends
-from sqlalchemy import func, select, text
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Plate, PlateStatus, State
 from app.db.session import get_db
 from app.schemas.state import MapSummaryResponse, StateSummary
 

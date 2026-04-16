@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { clsx } from 'clsx'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '@/hooks/AuthContext'
 import { useState } from 'react'
 
 interface VoteControlProps {

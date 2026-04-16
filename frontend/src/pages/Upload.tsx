@@ -7,7 +7,7 @@ import { RevealOnScroll } from '@/components/RevealOnScroll'
 import { useUploadSign, useCreatePlate } from '@/hooks/useApi'
 import { useRequireAuth } from '@/hooks/useRequireAuth'
 import { US_STATES } from '@/lib/states'
-import type { ApiError } from '@/lib/api'
+import { ApiError } from '@/lib/api'
 
 type UploadStep = 'choose' | 'preview' | 'submitting' | 'error'
 
@@ -104,9 +104,8 @@ export default function Upload() {
       setStatusMessage('Published!')
       setTimeout(() => navigate(`/plate/${plate.id}`), 800)
     } catch (err) {
-      const apiErr = err as ApiError
-      if (apiErr.code === 'moderation_rejected') {
-        const reason = (apiErr.details as { reason?: string } | undefined)?.reason
+      if (err instanceof ApiError && err.code === 'moderation_rejected') {
+        const reason = (err.details as { reason?: string } | undefined)?.reason
         setErrorHeadline("This one didn't make it.")
         setErrorMessage(
           reason === 'not_a_plate' ? "We couldn't find a license plate in this photo." :
@@ -115,12 +114,12 @@ export default function Upload() {
           reason === 'offensive_text' ? 'The plate text was flagged as offensive.' :
           'This upload was rejected by our moderation system.'
         )
-      } else if (apiErr.code === 'rate_limited') {
+      } else if (err instanceof ApiError && err.code === 'rate_limited') {
         setErrorHeadline("You've uploaded a lot today.")
         setErrorMessage('Come back in a bit.')
       } else {
         setErrorHeadline('Something went wrong.')
-        setErrorMessage(apiErr.message || 'Please try again.')
+        setErrorMessage(err instanceof Error ? err.message : 'Please try again.')
       }
       setStep('error')
     }

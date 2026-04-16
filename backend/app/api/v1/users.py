@@ -4,7 +4,6 @@ from fastapi import APIRouter, Depends, Header
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.v1.deps import get_current_user
 from app.core.errors import UnauthorizedError
 from app.core.security import verify_jwt
 from app.db.models import User

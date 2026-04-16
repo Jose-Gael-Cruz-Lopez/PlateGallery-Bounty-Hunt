@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { clsx } from 'clsx'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '@/hooks/AuthContext'
 
 const NAV_LINKS = [
   { to: '/gallery', label: 'Gallery' },

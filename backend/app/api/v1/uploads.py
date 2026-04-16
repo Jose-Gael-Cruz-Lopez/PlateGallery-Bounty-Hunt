@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import secrets
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,7 +12,6 @@ from app.core.config import settings
 from app.core.errors import ValidationError
 from app.db.models import UploadToken, User
 from app.db.session import get_db
-from app.schemas.plate import PlateResponse
 from app.services.rate_limit import check_and_record
 from app.services.storage import storage_service
 
@@ -46,7 +45,8 @@ async def sign_upload(
     if file_size_bytes < settings.UPLOAD_MIN_BYTES:
         raise ValidationError("File too small")
     if file_size_bytes > settings.UPLOAD_MAX_BYTES:
-        raise ValidationError(f"File too large. Maximum {settings.UPLOAD_MAX_BYTES // (1024*1024)} MB.")
+        max_mb = settings.UPLOAD_MAX_BYTES // (1024 * 1024)
+        raise ValidationError(f"File too large. Maximum {max_mb} MB.")
 
     # Rate limit
     ip = get_client_ip(request)
@@ -63,7 +63,7 @@ async def sign_upload(
 
     # Generate plate ID and object path
     plate_id = uuid.uuid4()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     ext = content_type.split("/")[-1]
     if ext == "jpeg":
         ext = "jpg"

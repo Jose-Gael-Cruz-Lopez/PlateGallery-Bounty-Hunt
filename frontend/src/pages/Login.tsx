@@ -1,7 +1,7 @@
 import { useSearchParams, Navigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { signInWithGoogle } from '@/lib/supabase'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '@/hooks/AuthContext'
 
 export default function Login() {
   const [searchParams] = useSearchParams()

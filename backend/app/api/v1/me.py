@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import uuid
-
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -64,7 +62,6 @@ async def get_my_votes(
 
     if cursor:
         cur = decode_cursor(cursor)
-        from sqlalchemy import and_
 
         stmt = stmt.where(Vote.created_at < cur["created_at"])
 

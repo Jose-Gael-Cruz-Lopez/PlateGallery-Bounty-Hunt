@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Literal
 
 from fastapi import APIRouter, Depends, Query
@@ -142,7 +142,7 @@ async def create_plate(
         raise ValidationError("Upload token belongs to another user")
     if token.consumed_at is not None:
         raise ValidationError("Upload token already consumed")
-    if token.expires_at < datetime.now(timezone.utc):
+    if token.expires_at < datetime.now(UTC):
         raise ValidationError("Upload token expired")
     if token.object_path != body.object_path:
         raise ValidationError("Object path mismatch")
@@ -151,7 +151,9 @@ async def create_plate(
     plate_text = body.plate_text.upper().strip()
     plate_text = re.sub(r"\s+", " ", plate_text)
     if not PLATE_TEXT_RE.match(plate_text):
-        raise ValidationError("Invalid plate text. Use 1-8 alphanumeric characters, spaces, or dashes.")
+        raise ValidationError(
+            "Invalid plate text. Use 1-8 alphanumeric characters, spaces, or dashes."
+        )
 
     # Validate state
     state_result = await db.execute(select(State).where(State.code == body.state_code.upper()))
@@ -174,7 +176,7 @@ async def create_plate(
     mod_result = await run_moderation(db, image_bytes, plate_text, caption, body.state_code.upper())
 
     # Mark token consumed
-    token.consumed_at = datetime.now(timezone.utc)
+    token.consumed_at = datetime.now(UTC)
 
     if not mod_result.approved:
         # Insert rejected plate so user can see why in their profile
@@ -205,7 +207,7 @@ async def create_plate(
         image_path=body.object_path,
         image_phash=mod_result.phash,
         status=PlateStatus.approved,
-        approved_at=datetime.now(timezone.utc),
+        approved_at=datetime.now(UTC),
     )
     db.add(plate)
     await db.commit()

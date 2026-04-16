@@ -51,12 +51,12 @@ class State(Base):
     region: Mapped[str] = mapped_column(Text, nullable=False)
 
 
-class PlateStatus(str, enum.Enum):
+class PlateStatus(enum.StrEnum):
     approved = "approved"
     rejected = "rejected"
 
 
-class RejectionReason(str, enum.Enum):
+class RejectionReason(enum.StrEnum):
     not_a_plate = "not_a_plate"
     explicit = "explicit"
     offensive_text = "offensive_text"

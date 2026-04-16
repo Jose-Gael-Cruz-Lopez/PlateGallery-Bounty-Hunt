@@ -4,7 +4,7 @@ import uuid
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, Request
-from sqlalchemy import delete, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.deps import get_client_ip, get_current_user

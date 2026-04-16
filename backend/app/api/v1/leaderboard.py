@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, Query
@@ -53,7 +53,7 @@ async def leaderboard_overall(
     response = LeaderboardResponse(
         items=[plate_to_response(p) for p in plates],
         window=window,
-        generated_at=datetime.now(timezone.utc).isoformat(),
+        generated_at=datetime.now(UTC).isoformat(),
     )
 
     _cache[cache_key] = response

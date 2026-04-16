@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '@/hooks/AuthContext'
 
 export default function AuthCallback() {
   const navigate = useNavigate()

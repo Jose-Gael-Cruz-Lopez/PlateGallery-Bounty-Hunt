@@ -53,7 +53,8 @@ async def check_image_openai(image_bytes: bytes, plate_text: str) -> ImageCheckR
 
         b64 = base64.b64encode(image_bytes).decode()
         prompt = (
-            "You are a license plate gallery moderator. Inspect this image and respond ONLY with JSON:\n"
+            "You are a license plate gallery moderator. Inspect this image and "
+            "respond ONLY with JSON:\n"
             '{"is_license_plate": bool, "is_explicit": bool, "is_offensive_symbol": bool, '
             '"quality_ok": bool, "confidence": number}\n'
             "No prose."
