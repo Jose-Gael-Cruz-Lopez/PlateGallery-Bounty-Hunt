@@ -16,7 +16,6 @@ dependencies = [
     "Pillow>=10.4.0",
     "imagehash>=4.3.0",
     "python-multipart>=0.0.12",
-    "openai>=1.50.0",
 ]
 
 [project.optional-dependencies]

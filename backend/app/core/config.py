@@ -15,7 +15,9 @@ class Settings(BaseSettings):
     SUPABASE_JWT_SECRET: SecretStr = SecretStr("")
     SUPABASE_STORAGE_BUCKET: str = "plates"
     OPENAI_API_KEY: SecretStr | None = None
-    MODERATION_PROVIDER: Literal["openai", "google", "rule_based"] = "rule_based"
+    GEMINI_API_KEY: SecretStr | None = None
+    GEMINI_MODEL: str = "gemini-2.5-flash"
+    MODERATION_PROVIDER: Literal["openai", "gemini", "rule_based"] = "gemini"
     CORS_ORIGINS: list[str] = ["http://localhost:5173", "http://localhost:3000"]
     CORS_ORIGIN_REGEX: str | None = None
     UPLOAD_MAX_BYTES: int = 10 * 1024 * 1024
