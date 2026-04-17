@@ -4,10 +4,10 @@ install:
 	uv venv && uv pip install -e ".[dev]"
 
 dev:
-	uvicorn app.main:app --reload --port 8000
+	.venv/bin/uvicorn app.main:app --reload --port 8001
 
 db:
-	docker compose up -d db
+	podman compose up -d db
 
 migrate:
-	alembic upgrade head
+	.venv/bin/alembic upgrade head
